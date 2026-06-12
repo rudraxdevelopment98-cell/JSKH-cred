@@ -23,9 +23,9 @@ services:
     branch: main
     healthCheckPath: /health
     buildCommand: >-
-      cd admin && npm ci && npm run build && cd .. &&
+      cd admin && npm ci --include=dev && npm run build && cd .. &&
       mkdir -p backend/public && cp -r admin/dist/. backend/public/ &&
-      cd backend && npm ci
+      cd backend && npm ci --omit=dev
     # Seed/promote the admin user (idempotent), then start the API + SPA.
     startCommand: cd backend && npm run seed:admin && npm start
     envVars:
