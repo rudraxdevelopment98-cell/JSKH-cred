@@ -228,6 +228,9 @@ Detailed documentation lives in the [`docs/`](./docs) directory:
   Docker, and a passing integration test suite. See [`backend/`](./backend).
 - ✅ **Web admin panel** (React + Vite + Material UI) — admin login, overview
   dashboard, user management, and security logs, wired to the API. See [`admin/`](./admin).
-- ⬜ Mobile app (Flutter)
+- 🚧 **Mobile app** (Flutter) — scaffolded foundation: auth flow, secure token
+  storage, bottom-nav shell, and vault screens wired to the API. Native platform
+  folders are generated with `flutter create .`. See [`mobile/`](./mobile).
+- ✅ **CI** — GitHub Actions runs backend tests (against PostgreSQL) and the admin build.
 
 Work follows the phases outlined in the [Roadmap](./docs/ROADMAP.md).

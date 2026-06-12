@@ -6,7 +6,7 @@ A phased delivery plan for JCred. Phases are indicative and may overlap.
 - [x] Product specification & technical overview
 - [x] Backend repository scaffolding
 - [x] Docker setup for the backend
-- [ ] CI/CD pipeline
+- [x] CI pipeline (GitHub Actions: backend tests + admin build)
 
 ## Phase 1 — Core Vault (MVP)
 - [x] Authentication (email/password) with rotating refresh tokens & sessions
@@ -17,7 +17,8 @@ A phased delivery plan for JCred. Phases are indicative and may overlap.
 - [x] Sharing, access requests, and approvals
 - [x] Notifications (in-app)
 - [x] Activity logging
-- [ ] Mobile app shell (Flutter): Splash, Onboarding, Login, Dashboard, Vault
+- [x] Mobile app shell (Flutter): Splash, Login, Dashboard, Vault, Shared, Profile
+- [ ] Mobile: phone OTP / social / biometric sign-in
 
 ## Phase 2 — Access Control & Sharing
 - [ ] Granular permissions (Private → Emergency Access)
