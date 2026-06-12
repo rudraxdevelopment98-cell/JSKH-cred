@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dashboard_screen.dart';
 import 'vault_screen.dart';
 import 'shared_screen.dart';
+import 'family_screen.dart';
 import 'profile_screen.dart';
 
 /// Authenticated app shell with bottom navigation.
@@ -20,6 +21,7 @@ class _HomeShellState extends State<HomeShell> {
     DashboardScreen(),
     VaultScreen(),
     SharedScreen(),
+    FamilyScreen(),
     ProfileScreen(),
   ];
 
@@ -34,7 +36,7 @@ class _HomeShellState extends State<HomeShell> {
           NavigationDestination(
             icon: Icon(Icons.dashboard_outlined),
             selectedIcon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+            label: 'Home',
           ),
           NavigationDestination(
             icon: Icon(Icons.lock_outline),
@@ -45,6 +47,11 @@ class _HomeShellState extends State<HomeShell> {
             icon: Icon(Icons.folder_shared_outlined),
             selectedIcon: Icon(Icons.folder_shared),
             label: 'Shared',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.groups_outlined),
+            selectedIcon: Icon(Icons.groups),
+            label: 'Family',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
