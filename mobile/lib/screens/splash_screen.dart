@@ -24,7 +24,7 @@ class SplashScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               "Your Family's Secure Digital Vault",
-              style: TextStyle(color: scheme.onPrimary.withOpacity(0.85)),
+              style: TextStyle(color: scheme.onPrimary.withValues(alpha: 0.85)),
             ),
             const SizedBox(height: 32),
             CircularProgressIndicator(color: scheme.onPrimary),
