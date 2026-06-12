@@ -1,0 +1,49 @@
+# Render.com one-click blueprint for a JCred demo.
+#
+# Deploy: https://render.com → New → Blueprint → connect this repo.
+# It provisions a free PostgreSQL database and a single web service that
+# serves both the API and the built admin panel (same origin).
+#
+# At deploy time you'll be asked to set ADMIN_PASSWORD — that, with
+# ADMIN_EMAIL below, is your admin login for the panel.
+
+databases:
+  - name: jcred-db
+    databaseName: jcred
+    user: jcred
+    plan: free
+
+services:
+  - type: web
+    name: jcred-demo
+    runtime: node
+    plan: free
+    region: oregon
+    # Deploys the feature branch; change to `main` once the PR is merged.
+    branch: claude/jcred-project-overview-ten9og
+    healthCheckPath: /health
+    buildCommand: >-
+      cd admin && npm ci && npm run build && cd .. &&
+      mkdir -p backend/public && cp -r admin/dist/. backend/public/ &&
+      cd backend && npm ci
+    # Seed/promote the admin user (idempotent), then start the API + SPA.
+    startCommand: cd backend && npm run seed:admin && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: jcred-db
+          property: connectionString
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      # Random string; the app derives a 32-byte AES-256 key from it.
+      - key: VAULT_ENCRYPTION_KEY
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: admin@jcred.app
+      # Prompted at deploy time — this is your admin panel password.
+      - key: ADMIN_PASSWORD
+        sync: false

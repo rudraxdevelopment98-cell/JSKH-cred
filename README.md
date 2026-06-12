@@ -205,6 +205,12 @@ Create an admin login (from `backend/`):
 ADMIN_EMAIL=admin@jcred.app ADMIN_PASSWORD=your-password npm run seed:admin
 ```
 
+### Hosted demo (one click)
+
+Prefer a shareable URL? Deploy the included [`render.yaml`](./render.yaml)
+blueprint on [Render](https://render.com) — it stands up PostgreSQL plus a web
+service that serves the API and admin panel together. See [Deploy](./docs/DEPLOY.md).
+
 ## Documentation
 
 Detailed documentation lives in the [`docs/`](./docs) directory:
@@ -214,6 +220,7 @@ Detailed documentation lives in the [`docs/`](./docs) directory:
 - [Security](./docs/SECURITY.md) — encryption, access control, and threat model
 - [API Overview](./docs/API.md) — REST endpoint surface
 - [Data Model](./docs/DATA_MODEL.md) — core entities and relationships
+- [Deploy](./docs/DEPLOY.md) — one-click hosted demo (Render) and other hosts
 - [Roadmap](./docs/ROADMAP.md) — phased delivery plan
 
 ---
