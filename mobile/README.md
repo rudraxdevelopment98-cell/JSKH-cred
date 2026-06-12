@@ -63,6 +63,26 @@ lib/
 test/                    widget test
 ```
 
+## Building an installable APK
+
+A GitHub Actions workflow builds a release APK you can install on an Android phone:
+
+1. Go to the repo's **Actions → Build APK → Run workflow**.
+2. Enter your backend URL (e.g. `https://jcred-demo.onrender.com/api/v1`).
+3. When it finishes, download the **`jcred-app-release`** artifact and install the
+   `.apk` on your device (you may need to allow "install from unknown sources").
+
+The APK is signed with debug keys (fine for testing/demo, not for the Play Store).
+The `android/` project is committed and includes the `INTERNET` permission so the
+release build can reach the API.
+
+Locally:
+
+```bash
+flutter build apk --release --dart-define=API_BASE=https://<your-host>/api/v1
+# output: build/app/outputs/flutter-apk/app-release.apk
+```
+
 ## Roadmap (not yet implemented)
 
 Phone OTP / social / biometric sign-in, document upload + OCR, family
