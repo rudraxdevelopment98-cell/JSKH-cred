@@ -13,6 +13,7 @@ import accessRequestRoutes from './modules/accessRequests/accessRequests.routes.
 import notificationRoutes from './modules/notifications/notifications.routes.js';
 import activityRoutes from './modules/activity/activity.routes.js';
 import adminUserRoutes from './modules/users/users.routes.js';
+import adminRoutes from './modules/admin/admin.routes.js';
 
 export function createApp() {
   const app = express();
@@ -33,6 +34,7 @@ export function createApp() {
   api.use('/access-requests', accessRequestRoutes);
   api.use('/notifications', notificationRoutes);
   api.use('/admin/users', adminUserRoutes);
+  api.use('/admin', adminRoutes); // /admin/stats
   api.use('/', activityRoutes); // /activity and /admin/activity
 
   app.use('/api/v1', api);

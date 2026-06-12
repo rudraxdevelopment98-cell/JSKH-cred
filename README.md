@@ -190,6 +190,21 @@ npm start            # API on :4000
 # or: docker compose up --build
 ```
 
+Then run the web admin panel ([`admin/`](./admin)):
+
+```bash
+cd admin
+cp .env.example .env
+npm install
+npm run dev          # http://localhost:5173 (proxies /api → :4000)
+```
+
+Create an admin login (from `backend/`):
+
+```bash
+ADMIN_EMAIL=admin@jcred.app ADMIN_PASSWORD=your-password npm run seed:admin
+```
+
 ## Documentation
 
 Detailed documentation lives in the [`docs/`](./docs) directory:
@@ -211,7 +226,8 @@ Detailed documentation lives in the [`docs/`](./docs) directory:
 - ✅ **Backend API** (Node.js + Express + PostgreSQL) — auth, encrypted vault,
   families, sharing, access requests, notifications, activity logs, with migrations,
   Docker, and a passing integration test suite. See [`backend/`](./backend).
-- ⬜ Web admin panel (React + Material UI)
+- ✅ **Web admin panel** (React + Vite + Material UI) — admin login, overview
+  dashboard, user management, and security logs, wired to the API. See [`admin/`](./admin).
 - ⬜ Mobile app (Flutter)
 
 Work follows the phases outlined in the [Roadmap](./docs/ROADMAP.md).

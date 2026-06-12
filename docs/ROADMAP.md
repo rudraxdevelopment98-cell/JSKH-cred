@@ -33,11 +33,13 @@ A phased delivery plan for JCred. Phases are indicative and may overlap.
 - [ ] Password generator, masked credential display
 
 ## Phase 4 — Admin & Scale
-- [ ] Web admin panel (React + Material UI)
-- [ ] User & family management, security logs
-- [ ] Analytics dashboard
+- [x] Web admin panel (React + Vite + Material UI): login, overview, users, logs
+- [x] User management (suspend / reinstate) and security logs
+- [x] Overview dashboard with live system stats
+- [x] Rate limiting (API)
+- [ ] Family management & analytics in the admin panel
 - [ ] Subscription management
-- [ ] Rate limiting, device verification, 2FA hardening
+- [ ] Device verification, 2FA hardening
 
 ## Phase 5 — Advanced (Future)
 - [ ] AI document categorization
