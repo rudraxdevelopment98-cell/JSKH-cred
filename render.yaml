@@ -19,8 +19,8 @@ services:
     runtime: node
     plan: free
     region: oregon
-    # Deploys the feature branch; change to `main` once the PR is merged.
-    branch: claude/jcred-project-overview-ten9og
+    # Deploys the default branch.
+    branch: main
     healthCheckPath: /health
     buildCommand: >-
       cd admin && npm ci && npm run build && cd .. &&

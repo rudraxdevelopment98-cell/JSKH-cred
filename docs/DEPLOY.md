@@ -20,8 +20,8 @@ When it's live, open the service URL:
 - **Health check:** `https://<your-service>.onrender.com/health`
 - **Login:** `admin@jcred.app` / the `ADMIN_PASSWORD` you set
 
-> The blueprint deploys the feature branch. After merging the PR, change
-> `branch:` in `render.yaml` to `main`.
+> Render reads `render.yaml` from the repository's **default branch (`main`)**,
+> so the project must be merged to `main` before deploying.
 
 ### What the blueprint does
 
