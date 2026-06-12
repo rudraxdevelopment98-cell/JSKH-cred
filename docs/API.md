@@ -33,25 +33,27 @@ This document sketches the REST API surface for the JCred backend
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| GET | `/items` | List vault items (filterable by type/tag) |
-| POST | `/items` | Create a credential / secure note |
-| POST | `/items/upload` | Upload a document (multipart) |
+| GET | `/items` | List owned vault items (filter by `?type=`) |
+| POST | `/items` | Create a credential / secure note (encrypted `secret`) |
 | GET | `/items/:id` | Get an item's metadata |
-| PUT | `/items/:id` | Update an item |
-| DELETE | `/items/:id` | Delete an item |
-| GET | `/items/:id/versions` | List version history |
-| GET | `/items/:id/download` | Download a document |
+| GET | `/items/:id/reveal` | Get metadata + decrypted secret (requires view access) |
+| PUT | `/items/:id` | Update an item (requires edit access) |
+| DELETE | `/items/:id` | Delete an item (owner only) |
+| GET | `/items/shared-with-me` | Items shared with the current user |
+| POST | `/items/upload` | _(planned)_ Upload a document (multipart) |
+| GET | `/items/:id/versions` | _(planned)_ List version history |
 
 ## Sharing & Access Control
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| POST | `/items/:id/share` | Share an item with a member at a permission level |
-| GET | `/shared-with-me` | Items shared with the current user |
-| POST | `/access-requests` | Request access to an item |
-| POST | `/access-requests/:id/approve` | Approve an access request |
-| POST | `/access-requests/:id/deny` | Deny an access request |
-| POST | `/emergency-access` | Trigger an emergency access request |
+| POST | `/items/:id/shares` | Share an item with a user at a permission level |
+| GET | `/items/:id/shares` | List an item's shares (owner only) |
+| DELETE | `/items/:id/shares/:granteeId` | Revoke a share |
+| POST | `/access-requests` | Request access to an item (`isEmergency` flag for break-glass) |
+| GET | `/access-requests/incoming` | Pending requests for items you own |
+| POST | `/access-requests/:id/approve` | Approve a request (auto-creates a share) |
+| POST | `/access-requests/:id/deny` | Deny a request |
 
 ## Family Management
 
@@ -67,9 +69,10 @@ This document sketches the REST API surface for the JCred backend
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| GET | `/notifications` | List notifications |
+| GET | `/notifications` | List notifications (`?unread=true` for unread only) |
 | POST | `/notifications/:id/read` | Mark a notification read |
-| POST | `/devices/register` | Register an FCM device token |
+| POST | `/notifications/read-all` | Mark all notifications read |
+| POST | `/devices/register` | _(planned)_ Register an FCM device token |
 
 ## Activity Logs
 

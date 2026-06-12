@@ -4,16 +4,20 @@ A phased delivery plan for JCred. Phases are indicative and may overlap.
 
 ## Phase 0 — Foundation (current)
 - [x] Product specification & technical overview
-- [ ] Repository scaffolding (backend, mobile, admin)
-- [ ] CI/CD pipeline and Docker setup
+- [x] Backend repository scaffolding
+- [x] Docker setup for the backend
+- [ ] CI/CD pipeline
 
 ## Phase 1 — Core Vault (MVP)
-- [ ] Authentication (email/password, phone OTP)
-- [ ] Secure vault: credentials & secure notes (AES-256)
+- [x] Authentication (email/password) with rotating refresh tokens & sessions
+- [ ] Authentication (phone OTP, social, biometric)
+- [x] Secure vault: credentials & secure notes (AES-256-GCM)
 - [ ] Document upload to encrypted S3 storage
-- [ ] Basic family management (invite, approve, remove)
+- [x] Family management (create, invite, approve, remove, roles)
+- [x] Sharing, access requests, and approvals
+- [x] Notifications (in-app)
+- [x] Activity logging
 - [ ] Mobile app shell (Flutter): Splash, Onboarding, Login, Dashboard, Vault
-- [ ] Activity logging
 
 ## Phase 2 — Access Control & Sharing
 - [ ] Granular permissions (Private → Emergency Access)

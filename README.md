@@ -177,6 +177,19 @@ Analytics · Subscription Management · System Settings
 
 ---
 
+## Getting Started
+
+The backend API is implemented and runnable. See [`backend/`](./backend) for setup:
+
+```bash
+cd backend
+cp .env.example .env
+npm install
+npm run migrate
+npm start            # API on :4000
+# or: docker compose up --build
+```
+
 ## Documentation
 
 Detailed documentation lives in the [`docs/`](./docs) directory:
@@ -192,6 +205,13 @@ Detailed documentation lives in the [`docs/`](./docs) directory:
 
 ## Project Status
 
-🚧 **Early stage** — this repository currently captures the product specification and
-technical overview. Implementation of the mobile apps, admin panel, and backend services
-will follow the phases outlined in the [Roadmap](./docs/ROADMAP.md).
+🚧 **In progress.**
+
+- ✅ Product specification & technical overview
+- ✅ **Backend API** (Node.js + Express + PostgreSQL) — auth, encrypted vault,
+  families, sharing, access requests, notifications, activity logs, with migrations,
+  Docker, and a passing integration test suite. See [`backend/`](./backend).
+- ⬜ Web admin panel (React + Material UI)
+- ⬜ Mobile app (Flutter)
+
+Work follows the phases outlined in the [Roadmap](./docs/ROADMAP.md).
