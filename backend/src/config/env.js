@@ -32,6 +32,22 @@ const env = {
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS ?? '900000', 10),
     max: parseInt(process.env.RATE_LIMIT_MAX ?? '300', 10),
   },
+
+  // Google Sign-In: the OAuth client ID(s) accepted as the ID-token audience.
+  // Comma-separated to allow web + Android + iOS client IDs.
+  googleClientIds: (process.env.GOOGLE_CLIENT_ID ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean),
+
+  // SMTP for outbound email (invite codes). Email is skipped if unset.
+  smtp: {
+    host: process.env.SMTP_HOST ?? '',
+    port: parseInt(process.env.SMTP_PORT ?? '587', 10),
+    user: process.env.SMTP_USER ?? '',
+    pass: process.env.SMTP_PASS ?? '',
+    from: process.env.SMTP_FROM ?? 'JCred <no-reply@jcred.app>',
+  },
 };
 
 export default env;

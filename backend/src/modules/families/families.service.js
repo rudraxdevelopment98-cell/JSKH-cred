@@ -1,5 +1,6 @@
 import { query, withTransaction } from '../../db/pool.js';
 import { ApiError } from '../../middleware/ApiError.js';
+import { sendEmail } from '../../services/email.js';
 
 /** Fetch a member row, or throw 403 if the user is not an active member. */
 async function requireActiveMember(familyId, userId) {
@@ -126,4 +127,89 @@ export async function assignRole(familyId, adminId, targetUserId, role) {
   );
   if (!rows[0]) throw ApiError.notFound('Member not found');
   return rows[0];
+}
+
+const CODE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+function randomCode() {
+  return String(Math.floor(100000 + Math.random() * 900000)); // 6 digits
+}
+
+/** Generate a 6-digit code unique among currently-active invites. */
+async function generateUniqueCode() {
+  for (let i = 0; i < 10; i += 1) {
+    const code = randomCode();
+    const { rows } = await query(
+      'SELECT 1 FROM family_invites WHERE code = $1 AND used = FALSE',
+      [code],
+    );
+    if (!rows[0]) return code;
+  }
+  throw new Error('Could not allocate a unique invite code');
+}
+
+/**
+ * A family admin generates a 6-digit join code. If an email is given and SMTP
+ * is configured, the code is emailed; the code is always returned so the admin
+ * can share it directly.
+ */
+export async function createInviteCode(familyId, adminId, { email } = {}) {
+  await requireFamilyAdmin(familyId, adminId);
+  const code = await generateUniqueCode();
+  const expiresAt = new Date(Date.now() + CODE_TTL_MS);
+  await query(
+    `INSERT INTO family_invites (family_id, code, email, created_by, expires_at)
+     VALUES ($1, $2, $3, $4, $5)`,
+    [familyId, code, email ?? null, adminId, expiresAt],
+  );
+
+  let emailed = false;
+  if (email) {
+    emailed = await sendEmail({
+      to: email,
+      subject: 'Your JCred family invite code',
+      text: `You've been invited to a family on JCred.\n\n`
+        + `Your 6-digit join code is: ${code}\n\n`
+        + `Open JCred → Family → "Join with code" and enter it. `
+        + `This code expires in 7 days.`,
+    });
+  }
+  return { code, expiresAt, emailed };
+}
+
+/**
+ * A member joins a family by entering a valid code. Entering the code is the
+ * member's own consent, so they become active immediately.
+ */
+export async function joinByCode(userId, code) {
+  return withTransaction(async (client) => {
+    const { rows } = await client.query(
+      `SELECT * FROM family_invites
+       WHERE code = $1 AND used = FALSE AND expires_at > now()`,
+      [code],
+    );
+    const invite = rows[0];
+    if (!invite) throw ApiError.badRequest('Invalid or expired code', 'invalid_code');
+
+    await client.query(
+      `INSERT INTO family_members (family_id, user_id, role, status)
+       VALUES ($1, $2, 'member', 'active')
+       ON CONFLICT (family_id, user_id) DO UPDATE SET status = 'active'`,
+      [invite.family_id, userId],
+    );
+    await client.query('UPDATE family_invites SET used = TRUE WHERE id = $1', [invite.id]);
+
+    // Notify the admin who created the invite.
+    await client.query(
+      `INSERT INTO notifications (user_id, type, payload)
+       VALUES ($1, 'family_invitation', $2)`,
+      [invite.created_by, { familyId: invite.family_id, joinedBy: userId }],
+    );
+
+    const { rows: fam } = await client.query(
+      'SELECT id, name FROM families WHERE id = $1',
+      [invite.family_id],
+    );
+    return fam[0];
+  });
 }

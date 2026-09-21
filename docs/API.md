@@ -22,6 +22,7 @@ This document sketches the REST API surface for the JCred backend
 | POST | `/auth/otp/verify` | Verify a phone OTP |
 | POST | `/auth/google` | Google Sign-In |
 | POST | `/auth/apple` | Apple Sign-In |
+| POST | `/auth/google` | Google Sign-In (verifies an ID token; requires `GOOGLE_CLIENT_ID`) |
 | POST | `/auth/2fa/enable` | Enable two-factor authentication |
 | POST | `/auth/2fa/verify` | Verify a 2FA challenge |
 | POST | `/auth/refresh` | Refresh an access token |
@@ -60,7 +61,9 @@ This document sketches the REST API surface for the JCred backend
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | POST | `/families` | Create a family group |
-| POST | `/families/:id/invite` | Invite a member |
+| POST | `/families/:id/invite` | Invite a member by email |
+| POST | `/families/:id/invite-code` | Generate a 6-digit join code (optionally email it) |
+| POST | `/families/join` | Join a family by entering a 6-digit code |
 | POST | `/families/:id/members/:userId/approve` | Approve a member |
 | DELETE | `/families/:id/members/:userId` | Remove a member |
 | PUT | `/families/:id/members/:userId/role` | Assign a role |

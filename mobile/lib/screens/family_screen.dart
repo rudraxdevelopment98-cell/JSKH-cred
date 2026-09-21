@@ -57,10 +57,59 @@ class _FamilyScreenState extends State<FamilyScreen> {
     }
   }
 
+  Future<void> _joinDialog() async {
+    final service = context.read<FamilyService>();
+    final controller = TextEditingController();
+    final code = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Join with code'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          maxLength: 6,
+          decoration: const InputDecoration(
+            labelText: '6-digit code',
+            counterText: '',
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: const Text('Join'),
+          ),
+        ],
+      ),
+    );
+    if (code == null || code.isEmpty) return;
+    try {
+      await service.joinByCode(code);
+      if (!mounted) return;
+      setState(() => _families = service.listFamilies());
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Joined family')));
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Family')),
+      appBar: AppBar(
+        title: const Text('Family'),
+        actions: [
+          TextButton.icon(
+            onPressed: _joinDialog,
+            icon: const Icon(Icons.login),
+            label: const Text('Join'),
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
           setState(_reload);

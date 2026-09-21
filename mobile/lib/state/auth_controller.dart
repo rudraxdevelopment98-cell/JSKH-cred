@@ -68,6 +68,26 @@ class AuthController extends ChangeNotifier {
     }
   }
 
+  /// Exchanges a Google ID token for a JCred session.
+  Future<bool> loginWithGoogleIdToken(String idToken) async {
+    _error = null;
+    try {
+      final data = await _api.post('/auth/google',
+          body: {'idToken': idToken}, auth: false) as Map<String, dynamic>;
+      await _tokens.save(
+        access: data['accessToken'] as String,
+        refresh: data['refreshToken'] as String,
+      );
+      _user = User.fromJson(data['user'] as Map<String, dynamic>);
+      _setStatus(AuthStatus.authenticated);
+      return true;
+    } on ApiException catch (e) {
+      _error = e.message;
+      notifyListeners();
+      return false;
+    }
+  }
+
   Future<void> logout() async {
     final refresh = await _tokens.refreshToken;
     if (refresh != null) {

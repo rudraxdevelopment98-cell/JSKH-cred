@@ -23,6 +23,10 @@ const refreshSchema = z.object({
   refreshToken: z.string().min(1),
 });
 
+const googleSchema = z.object({
+  idToken: z.string().min(1),
+});
+
 function ctxFrom(req) {
   return { userAgent: req.headers['user-agent'], ip: req.ip };
 }
@@ -51,6 +55,15 @@ router.post(
   validate(refreshSchema),
   asyncHandler(async (req, res) => {
     res.json(await authService.refresh(req.body, ctxFrom(req)));
+  }),
+);
+
+router.post(
+  '/google',
+  authLimiter,
+  validate(googleSchema),
+  asyncHandler(async (req, res) => {
+    res.json(await authService.googleSignIn(req.body, ctxFrom(req)));
   }),
 );
 
