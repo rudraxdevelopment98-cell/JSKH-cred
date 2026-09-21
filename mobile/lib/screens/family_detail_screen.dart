@@ -64,11 +64,59 @@ class _FamilyDetailScreenState extends State<FamilyDetailScreen> {
     }
   }
 
+  Future<void> _generateCode() async {
+    final service = context.read<FamilyService>();
+    try {
+      final result = await service.createInviteCode(widget.family.id);
+      final code = result['code'] as String;
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Family invite code'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Share this 6-digit code with your family member. '
+                  'They enter it in Family → Join. It expires in 7 days.'),
+              const SizedBox(height: 16),
+              SelectableText(
+                code,
+                style: const TextStyle(
+                    fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: 6),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Done'),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isAdmin = widget.family.isAdmin;
     return Scaffold(
-      appBar: AppBar(title: Text(widget.family.name)),
+      appBar: AppBar(
+        title: Text(widget.family.name),
+        actions: [
+          if (isAdmin)
+            IconButton(
+              tooltip: 'Generate join code',
+              icon: const Icon(Icons.pin_outlined),
+              onPressed: _generateCode,
+            ),
+        ],
+      ),
       body: FutureBuilder<List<FamilyMember>>(
         future: _members,
         builder: (context, snap) {

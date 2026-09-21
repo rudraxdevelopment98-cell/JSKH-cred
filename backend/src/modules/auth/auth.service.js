@@ -1,4 +1,5 @@
 import env from '../../config/env.js';
+import { OAuth2Client } from 'google-auth-library';
 import { query, withTransaction } from '../../db/pool.js';
 import { hashPassword, verifyPassword } from '../../crypto/password.js';
 import { sha256 } from '../../crypto/encryption.js';
@@ -107,6 +108,48 @@ export async function logout({ refreshToken }) {
   await query('UPDATE sessions SET revoked = TRUE WHERE token_hash = $1', [
     sha256(refreshToken),
   ]);
+}
+
+const googleClient = env.googleClientIds.length
+  ? new OAuth2Client()
+  : null;
+
+/**
+ * Sign in with a Google ID token. Verifies the token against the configured
+ * client IDs, then creates or logs in the matching user by email.
+ */
+export async function googleSignIn({ idToken }, ctx = {}) {
+  if (!googleClient) {
+    throw ApiError.badRequest('Google sign-in is not configured', 'google_not_configured');
+  }
+
+  let payload;
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken,
+      audience: env.googleClientIds,
+    });
+    payload = ticket.getPayload();
+  } catch {
+    throw ApiError.unauthorized('Invalid Google token', 'invalid_google_token');
+  }
+  if (!payload?.email || !payload.email_verified) {
+    throw ApiError.unauthorized('Google account email not verified', 'email_unverified');
+  }
+
+  const { rows } = await query('SELECT * FROM users WHERE email = $1', [payload.email]);
+  let user = rows[0];
+  if (!user) {
+    const created = await query(
+      `INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING *`,
+      [payload.email, payload.name ?? null],
+    );
+    user = created.rows[0];
+  }
+  if (user.status === 'suspended') throw ApiError.forbidden('Account suspended');
+
+  await logActivity({ userId: user.id, action: 'login', metadata: { event: 'google' } });
+  return issueSession(user, ctx);
 }
 
 export async function listSessions(userId) {

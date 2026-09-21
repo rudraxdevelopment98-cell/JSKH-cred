@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
+import '../config.dart';
 import '../state/auth_controller.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -42,6 +44,41 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(auth.error!)),
       );
+    }
+  }
+
+  Future<void> _google() async {
+    final authCtrl = context.read<AuthController>();
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _submitting = true);
+    try {
+      final gsi = GoogleSignIn(
+        serverClientId: Config.googleServerClientId,
+        scopes: const ['email'],
+      );
+      final account = await gsi.signIn();
+      if (account == null) {
+        if (mounted) setState(() => _submitting = false);
+        return; // user cancelled
+      }
+      final gAuth = await account.authentication;
+      final idToken = gAuth.idToken;
+      if (idToken == null) throw Exception('No Google ID token');
+      final ok = await authCtrl.loginWithGoogleIdToken(idToken);
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      if (!ok) {
+        messenger.showSnackBar(
+          SnackBar(content: Text(authCtrl.error ?? 'Google sign-in failed')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _submitting = false);
+        messenger.showSnackBar(
+          SnackBar(content: Text('Google sign-in failed: $e')),
+        );
+      }
     }
   }
 
@@ -117,6 +154,25 @@ class _LoginScreenState extends State<LoginScreen> {
                           ? 'Already have an account? Sign in'
                           : "Don't have an account? Sign up"),
                     ),
+                    if (Config.googleEnabled) ...[
+                      const SizedBox(height: 8),
+                      const Row(
+                        children: [
+                          Expanded(child: Divider()),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            child: Text('or'),
+                          ),
+                          Expanded(child: Divider()),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        onPressed: _submitting ? null : _google,
+                        icon: const Icon(Icons.g_mobiledata, size: 28),
+                        label: const Text('Continue with Google'),
+                      ),
+                    ],
                   ],
                 ),
               ),
